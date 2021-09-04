@@ -33,15 +33,12 @@ export class BubbleMapComponent implements OnDestroy {
   constructor(private theme: NbThemeService,
               private http: HttpClient) {
 
-    combineLatest([
-      // this.http.get('assets/map/world.json'),
-//      this.http.get('https://mockairtraffic.azurewebsites.net/api/MockAirTrafficInfo/WorldMap'),
-        
+    combineLatest([        
         //production
-        //this.http.get('https://airtraffic.azurewebsites.net/api/AirTrafficInfo/WorldMap'),
+        //this.http.get('https://airtraffic.azurewebsites.net/api/TrafficInfo/WorldMap'),
         
         //localhost
-        this.http.get('https://localhost:44389/api/AirTrafficInfo/WorldMap'),
+        this.http.get('https://localhost:44389/api/TrafficInfo/WorldMap'),
       this.theme.getJsTheme(),
     ])
       .pipe(takeWhile(() => this.alive))
@@ -56,7 +53,7 @@ export class BubbleMapComponent implements OnDestroy {
         interval(2000)
           .pipe(takeWhile(() => this.alive))
           .subscribe(() => {
-            this.getAirTrafficInfo()
+            this.getTrafficInfo()
             .subscribe((res: any) => { 
               console.log('json: ', res);
               this.mapData = res['planes'];
@@ -203,18 +200,15 @@ export class BubbleMapComponent implements OnDestroy {
     this.alive = false;
   }
 
-  private getAirTrafficInfo(){
+  private getTrafficInfo(){
     //todo: figure out environment detection? 
     //todo: split into 2 separate pages each independently pointing each azure hosting - dockerised and mock
 
-    //localhost on premises mock
-    //return this.http.get('https://localhost:44389/api/MockAirTrafficInfo');
-    
     //localhost on premises
-    return this.http.get('https://localhost:44389/api/AirTrafficInfo');
+    return this.http.get('https://localhost:44389/api/TrafficInfo');
     
     //Docker localhost
-    //return this.http.get('http://localhost:8880/api/AirTrafficInfo');
+    //return this.http.get('http://localhost:8880/api/TrafficInfo');
 
     //Azure mock
     //return this.http.get('https://mockairtraffic.azurewebsites.net/api/MockAirTrafficInfo');
