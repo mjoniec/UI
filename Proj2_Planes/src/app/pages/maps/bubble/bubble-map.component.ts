@@ -34,11 +34,11 @@ export class BubbleMapComponent implements OnDestroy {
               private http: HttpClient) {
 
     combineLatest([        
-        //production
-        //this.http.get('https://airtraffic.azurewebsites.net/api/TrafficInfo/WorldMap'),
-        
-        //localhost
-        this.http.get('https://localhost:44389/api/TrafficInfo/WorldMap'),
+      //production
+      //this.http.get('https://airtraffic.azurewebsites.net/api/TrafficInfo/WorldMap'),
+      
+      //localhost
+      this.http.get('https://localhost:44389/api/TrafficInfo/WorldMap'),
       this.theme.getJsTheme(),
     ])
       .pipe(takeWhile(() => this.alive))
@@ -55,7 +55,7 @@ export class BubbleMapComponent implements OnDestroy {
           .subscribe(() => {
             this.getTrafficInfo()
             .subscribe((res: any) => { 
-              console.log('json: ', res);
+              //console.log('json: ', res);
               this.mapData = res['planes'];
               this.mapData2 = res['airports'];
   
@@ -109,7 +109,19 @@ export class BubbleMapComponent implements OnDestroy {
                       //return `${params.name}: ${params.value[2]}`;
                       // return `<img src = "assets/images/${params.name}.png" height="50" width="50"/>${params.name}: ${params.value[2]}`
                       //png vs jpg return `<img src = "assets/images/Plane 1.png" height="50" width="50"/>`
-                      return `<img src = "assets/images/${params.name}.jpg" height="80" width="80"/> ${params.name}`
+                      
+                      return `<img src = "assets/images/${params.name}.jpg" height="80" width="80"/> ${params.name}`;
+                      
+                      //#46 - tried to type dynamically info - this part seems to be static once per launch ... can not get ui changes to work here...
+                      // if(typeof params.isGoodWeather == 'undefined') {
+                      //   return `<img src = "assets/images/${params.name}.jpg" height="80" width="80"/> ${params.name} ${params.destinationAirportName}`;
+                      // }
+                      // else if(params.isGoodWeather == 'true') {
+                      //   return `<img src = "assets/images/${params.name}.jpg" height="80" width="80"/> ${params.name}`;
+                      // }
+                      // else {
+                      //   return `<img src = "assets/images/${params.name}.jpg" height="80" width="80"/> <img src = "assets/images/badWeather.jpg" height="80" width="80"/> ${params.name}`;
+                      // }
                     },
                   },
                   visualMap: {
@@ -149,7 +161,7 @@ export class BubbleMapComponent implements OnDestroy {
                       coordinateSystem: 'geo',
                       data: this.mapData.map(itemOpt => {
                         return {
-                          name: itemOpt.name,
+                          name: itemOpt.name,// + ' Destination: ' + itemOpt.destinationAirportName,
                           symbol: "triangle",//itemOpt.symbol,
                           symbolRotate: itemOpt.symbolRotate,
                           value: [
@@ -172,8 +184,8 @@ export class BubbleMapComponent implements OnDestroy {
                       coordinateSystem: 'geo',
                       data: this.mapData2.map(itemOpt => {
                         return {
-                          name: itemOpt.name,
-                          symbol: "circle",//itemOpt.symbol,
+                          name: itemOpt.name,// + ' weather:' + itemOpt.isGoodWeather,
+                          symbol: this.getSymbolBasedOnWeather(itemOpt),//"circle",//itemOpt.symbol,
                           symbolRotate: itemOpt.symbolRotate,
                           value: [
                             itemOpt.longitude,
@@ -183,7 +195,7 @@ export class BubbleMapComponent implements OnDestroy {
                           ],
                           itemStyle: {
                             normal: {
-                              color: itemOpt.color,
+                              color: this.getColorBasedOnWeather(itemOpt)
                             },
                           }
                         };
@@ -198,6 +210,24 @@ export class BubbleMapComponent implements OnDestroy {
 
   ngOnDestroy() {
     this.alive = false;
+  }
+
+  private getSymbolBasedOnWeather(itemOpt) {
+    if(itemOpt.isGoodWeather) { 
+      return 'circle'; 
+    } 
+    else { 
+      return 'square';
+    }
+  }
+
+  private getColorBasedOnWeather(itemOpt) {
+    if(itemOpt.isGoodWeather) { 
+      return itemOpt.color; 
+    } 
+    else { 
+      return '#000000';
+    }
   }
 
   private getTrafficInfo(){
