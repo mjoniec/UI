@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { MapsComponent } from './maps.component';
-import { BubbleMapComponent } from './bubble/bubble-map.component';
 import { PlanesDockerizedMapComponent } from './planes-dockerized/planes-dockerized.component';
 import { PlanesSimulatedMapComponent } from './planes-simulated/planes-simulated.component';
 
@@ -10,10 +9,7 @@ import { PlanesSimulatedMapComponent } from './planes-simulated/planes-simulated
 const routes: Routes = [{
   path: '',
   component: MapsComponent,
-  children: [{
-      path: 'bubble',
-      component: BubbleMapComponent,
-    }, {
+  children: [ {
       path: 'planes-dockerized',
       component: PlanesDockerizedMapComponent,
     }, {
@@ -30,7 +26,6 @@ export class MapsRoutingModule { }
 
 export const routedComponents = [
   MapsComponent,
-  BubbleMapComponent,
   PlanesDockerizedMapComponent,
   PlanesSimulatedMapComponent,
 ];

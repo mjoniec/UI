@@ -10,10 +10,6 @@ export const MENU_ITEMS: NbMenuItem[] = [
     icon: 'map-outline',
     children: [
       {
-        title: 'Bubble Maps',
-        link: '/pages/maps/bubble',
-      },
-      {
         title: 'Planes Dockerized',
         link: '/pages/maps/planes-dockerized',
       },
