@@ -12,6 +12,14 @@ export const MENU_ITEMS: NbMenuItem[] = [
       {
         title: 'Bubble Maps',
         link: '/pages/maps/bubble',
+      },
+      {
+        title: 'Planes Dockerized',
+        link: '/pages/maps/planes-dockerized',
+      },
+      {
+        title: 'Planes Simulated',
+        link: '/pages/maps/planes-simulated',
       }
     ],
   },
