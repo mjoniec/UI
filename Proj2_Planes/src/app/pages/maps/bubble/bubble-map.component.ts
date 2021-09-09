@@ -19,8 +19,8 @@ import { registerMap } from 'echarts';
 export class BubbleMapComponent implements OnDestroy {
 
   latlong: any = {};
-  mapData: any[];
-  mapData2: any[];
+  planes: any[];
+  airports: any[];
   max = -Infinity;
   min = Infinity;
   options: any;
@@ -37,8 +37,12 @@ export class BubbleMapComponent implements OnDestroy {
       //production
       //this.http.get('https://airtraffic.azurewebsites.net/api/TrafficInfo/WorldMap'),
       
-      //localhost
-      this.http.get('https://localhost:44389/api/TrafficInfo/WorldMap'),
+      //localhost on premises
+      //this.http.get('https://localhost:44389/api/TrafficInfo/WorldMap'),
+
+      //localhost docker
+      this.http.get('http://localhost:8880/api/TrafficInfo/WorldMap'),
+
       this.theme.getJsTheme(),
     ])
       .pipe(takeWhile(() => this.alive))
@@ -55,30 +59,12 @@ export class BubbleMapComponent implements OnDestroy {
           .subscribe(() => {
             this.getTrafficInfo()
             .subscribe((res: any) => { 
+              
               //console.log('json: ', res);
-              this.mapData = res['planes'];
-              this.mapData2 = res['airports'];
-  
-                // this.mapData = [
-                //   { 'latitude': 10, 'longitude': 10, 'name': 'plane x 1', 'value': 30, 'color': color1, symbolRotate: 45, symbol: 'arrow' },
-                //   { 'latitude': 20, 'longitude': 20, 'name': 'plane x 2', 'value': 30, 'color': color1, symbolRotate: 10, symbol: 'arrow' },
-                //   { 'latitude': 30, 'longitude': 30, 'name': 'airport x', 'value': 80, 'color': color1, symbolRotate: 60, symbol: 'triangle'},
-                //   { 'latitude': 40, 'longitude': 40, 'name': 'plane y 1', 'value': 30, 'color': color2, symbolRotate: 20, symbol: 'arrow' },
-                //   { 'latitude': 50, 'longitude': 50, 'name': 'airport y', 'value': 80, 'color': color2, symbolRotate: 10, symbol: 'triangle' }
-                // ];
-  
-                // this.mapData2 = [
-                //   { 'latitude': 60, 'longitude': 10, 'name': 'plane x 1', 'value': 30, 'color': color3 },
-                //   { 'latitude': 60, 'longitude': 20, 'name': 'plane x 2', 'value': 30, 'color': color3 },
-                //   { 'latitude': 60, 'longitude': 30, 'name': 'airport x', 'value': 80, 'color': color3 },
-                //   { 'latitude': 60, 'longitude': 40, 'name': 'plane y 1', 'value': 30, 'color': color4 },
-                //   { 'latitude': 60, 'longitude': 50, 'name': 'airport y', 'value': 80, 'color': color4 }        
-                // ];
-  
-                //console.log('mapdata ', this.mapData);
-                //console.log('mapdata2 ', this.mapData2);
-  
-                this.mapData.forEach((itemOpt) => {
+              this.planes = res['planes'];
+              this.airports = res['airports'];
+
+                this.planes.forEach((itemOpt) => {
                   if (itemOpt.value > this.max) {
                     this.max = itemOpt.value;
                   }
@@ -98,18 +84,8 @@ export class BubbleMapComponent implements OnDestroy {
                   },
                   tooltip: {
                     trigger: 'item',
-
                     useHTML: true,
-                    // formatter: function() {
-                    //   var img = '<img src = "assets/images/eva.png" height="50" width="50"/><p>plane 1</p>'
-                    //   return img
-                    // },
-
                     formatter: params => {
-                      //return `${params.name}: ${params.value[2]}`;
-                      // return `<img src = "assets/images/${params.name}.png" height="50" width="50"/>${params.name}: ${params.value[2]}`
-                      //png vs jpg return `<img src = "assets/images/Plane 1.png" height="50" width="50"/>`
-                      
                       return `<img src = "assets/images/${params.name}.jpg" height="80" width="80"/> ${params.name}`;
                       
                       //#46 - tried to type dynamically info - this part seems to be static once per launch ... can not get ui changes to work here...
@@ -159,7 +135,7 @@ export class BubbleMapComponent implements OnDestroy {
                     {
                       type: 'scatter',
                       coordinateSystem: 'geo',
-                      data: this.mapData.map(itemOpt => {
+                      data: this.planes.map(itemOpt => {
                         return {
                           name: itemOpt.name,// + ' Destination: ' + itemOpt.destinationAirportName,
                           symbol: "triangle",//itemOpt.symbol,
@@ -182,7 +158,7 @@ export class BubbleMapComponent implements OnDestroy {
                       type: 'graph',
                       //type: 'scatter',
                       coordinateSystem: 'geo',
-                      data: this.mapData2.map(itemOpt => {
+                      data: this.airports.map(itemOpt => {
                         return {
                           name: itemOpt.name,// + ' weather:' + itemOpt.isGoodWeather,
                           symbol: this.getSymbolBasedOnWeather(itemOpt),//"circle",//itemOpt.symbol,
@@ -232,15 +208,12 @@ export class BubbleMapComponent implements OnDestroy {
 
   private getTrafficInfo(){
     //todo: figure out environment detection? 
-    //todo: split into 2 separate pages each independently pointing each azure hosting - dockerised and mock
+    //todo: split into 2 separate pages each independently pointing to either dockerized or simulated backend's api
 
     //localhost on premises
-    return this.http.get('https://localhost:44389/api/TrafficInfo');
+    //return this.http.get('https://localhost:44389/api/TrafficInfo');
     
-    //Docker localhost
-    //return this.http.get('http://localhost:8880/api/TrafficInfo');
-
-    //Azure mock
-    //return this.http.get('https://mockairtraffic.azurewebsites.net/api/MockAirTrafficInfo');
+    //localhost dockerized
+    return this.http.get('http://localhost:8880/api/TrafficInfo');
   }
 }
