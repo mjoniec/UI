@@ -7,6 +7,7 @@ UI clients for backend projects
 - 1st build likely to cause error, if so execute this: npm install --save-dev @angular-devkit/build-angular 
 - open at url: http://localhost:4200/pages/maps/bubble
 - Production - https://planesui.azurewebsites.net - then navigate to map
+- GIT - some lib issiue preventing normal push command, use: git push --no-verify
 
 # Installing prerequisites
 
